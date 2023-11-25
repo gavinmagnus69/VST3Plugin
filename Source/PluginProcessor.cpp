@@ -407,15 +407,25 @@ void NewProjectAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
 
 
 	//sending out (delay + slider value) as 2 7 bits values via midi link through channel 1 controller event 6
-	int value = static_cast<int>(std::abs(d_ms) + by_slider);
+	int value = static_cast<int>((std::abs(d_ms) + by_slider) * 4.125);
+	if(value < 0)
+	{
+		value = 0;
+	}
 	int valueMSB = (value >> 7) & 0x7F; // Most Significant 7 bits
 	int valueLSB = value & 0x7F; // Least Significant 7 bits
+
+
+
+	//cc 14 bit 6/38
 	midiMessages.addEvent(juce::MidiMessage::controllerEvent(1
 		, 6, valueMSB), 0);
 	midiMessages.addEvent(juce::MidiMessage::controllerEvent(1
-		, 6, valueLSB), 0);
+		, 38, valueLSB), 0);
 
-	int empty = 0;
+
+	//pitch
+	midiMessages.addEvent(juce::MidiMessage::pitchWheel(1, static_cast<int>(value * 4.125)), 0);
 
 	for (int i = 0; i < buffer.getNumSamples(); ++i)
 	{
