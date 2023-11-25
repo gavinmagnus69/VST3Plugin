@@ -243,6 +243,8 @@ NewProjectAudioProcessor::NewProjectAudioProcessor()
 	)
 #endif
 {
+
+	//parameter initialized in constructor with these params
 	addParameter(myParameter = new juce::AudioParameterFloat("myParam", "Delay, ms", 0.0f, 4000.0f, 0.0f));
 }
 
@@ -401,6 +403,10 @@ void NewProjectAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
 	
 	
 	//midilink
+
+
+
+	//sending out (delay + slider value) as 2 7 bits values via midi link through channel 1 controller event 6
 	int value = static_cast<int>(std::abs(d_ms) + by_slider);
 	int valueMSB = (value >> 7) & 0x7F; // Most Significant 7 bits
 	int valueLSB = value & 0x7F; // Least Significant 7 bits
@@ -409,7 +415,7 @@ void NewProjectAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
 	midiMessages.addEvent(juce::MidiMessage::controllerEvent(1
 		, 6, valueLSB), 0);
 
-
+	int empty = 0;
 
 	for (int i = 0; i < buffer.getNumSamples(); ++i)
 	{
@@ -423,6 +429,8 @@ void NewProjectAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
 		delay_ms = std::to_string(std::abs(delay_frames));
 		o_delay_ms = std::to_string(std::abs(d_ms));
 
+
+		//we sent info via midi modulation(we sent delay + slider value)
 		myParameter->setValueNotifyingHost((std::abs(d_ms) + std::floor(by_slider)) / 4000);
 		
 

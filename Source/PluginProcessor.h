@@ -130,6 +130,8 @@ public:
 
 	double by_slider = 0;//delay that we recieve by slider in gui
 
+
+	//parametr decalred for midi modulation link
 	juce::AudioParameterFloat* myParameter;
 
 	double d_ms = 0;//input delay
