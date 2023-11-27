@@ -103,6 +103,8 @@ inline void handleTimecode(const long double& sample, tc_data& data, const int& 
 
 	//pulsesize is depending of srate and fps
 	data.pulsesize = srate / frates[slider] / 160;
+
+
 	// remove DC offset
 	data.otm1 = 0.999 * data.otm1 + sample - data.itm1;
 	data.itm1 = sample;
@@ -446,20 +448,30 @@ void NewProjectAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
 
 		}
 		d_ms = calc_delay(chnl1_in, chnl2_in, fps);
+
+		if (std::abs(prev_frames - delay_frames) > 1)
+		{
+			
+			chnl1.clear();
+			chnl2.clear();
+		}
+		else if(std::abs(prev_frames - delay_frames) == 1)
+		{
+				if (d_ms > prev_ms)
+				{
+					d_ms = prev_ms;
+					delay_frames = prev_frames;
+				}
+		}
+
+
 		delay_ms = std::to_string(std::abs(delay_frames));
 		o_delay_ms = std::to_string(std::abs(d_ms));
 
 
 		//we sent info via midi modulation(we sent delay + slider value)
 		myParameter->setValueNotifyingHost((std::abs(d_ms) + std::floor(by_slider)) / 4000);
-		
 
-
-		if(std::abs(prev_frames - delay_frames) > 1)
-		{
-			chnl1.clear();
-			chnl2.clear();
-		}
 
 		if (active_delay)
 		{

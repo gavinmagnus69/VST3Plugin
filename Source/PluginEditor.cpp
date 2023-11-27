@@ -76,7 +76,7 @@ NewProjectAudioProcessorEditor::NewProjectAudioProcessorEditor(NewProjectAudioPr
 
 	fps_box.onChange = [&]()
 		{
-			int id = fps_box.getSelectedId();
+			const auto id = fps_box.getSelectedId();
 
 			if(id == 1)
 			{
@@ -156,6 +156,8 @@ void NewProjectAudioProcessorEditor::resized()
 	timecode_box_chanel2.setTopRightPosition(450, 30);
 	timecode_box_chanel2.moved();
 
+
+	//delay
 	delay_button.setButtonText("delay");
 	delay_button.setSize(50, 30);
 	delay_button.setTopRightPosition(220, 200);
@@ -173,6 +175,7 @@ void NewProjectAudioProcessorEditor::resized()
 	o_delay_box.setTopLeftPosition(160, 105);
 	o_delay_box.moved();
 
+	//delay to midi
 	show_MIDI.setSize(100, 50);
 	show_MIDI.setTopLeftPosition(290, 170);
 	show_MIDI.moved();
@@ -181,11 +184,14 @@ void NewProjectAudioProcessorEditor::resized()
 	value_MIDI.setTopLeftPosition(290, 180);
 	value_MIDI.moved();
 
-	version.setText("ver 1.2", juce::dontSendNotification);
+	//version label
+	version.setText("ver 1.3", juce::dontSendNotification);
 	version.setSize(170, 75);
 	version.setTopLeftPosition(290, 230);
 	version.moved();
 
+
+	//fps box and fps label
 	fps_box.setSize(60, 30);
 	fps_box.setTopLeftPosition(160, 250);
 	fps_box.moved();

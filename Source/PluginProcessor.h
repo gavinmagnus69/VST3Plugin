@@ -52,8 +52,6 @@ public:
 
 	const int bufSize = 80;
 	float pulsesize = 9.1875; //sample rate 44,1khz and 30 fps
-	//const long double pulsesize = 10; //sample rate 48khz
-
 
 	int new_time = 0;
 	int old_time = 0;
