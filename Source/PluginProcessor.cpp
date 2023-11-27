@@ -37,7 +37,7 @@ inline void delay(float* writePtr, const int& index, tc_data& data)
 	}
 }
 
-inline double calc_delay(tc_data& data1, tc_data& data2)
+inline double calc_delay(tc_data& data1, tc_data& data2, int fps = 30)
 {
 	int h1 = data1.hrs;
 	int h2 = data2.hrs;
@@ -52,8 +52,8 @@ inline double calc_delay(tc_data& data1, tc_data& data2)
 	int f2 = data2.frms;
 
 
-	int time1_in_frames = 30 * 3600 * h1 + 30 * 60 * m1 + 30 * s1 + f1;
-	int time2_in_frames = 30 * 3600 * h2 + 30 * 60 * m2 + 30 * s2 + f2;
+	int time1_in_frames = fps * 3600 * h1 + fps * 60 * m1 + fps * s1 + f1;
+	int time2_in_frames = fps * 3600 * h2 + fps * 60 * m2 + fps * s2 + f2;
 
 	
 
@@ -67,7 +67,7 @@ inline double calc_delay(tc_data& data1, tc_data& data2)
 	//in 1 sec there are 30 frames, so it's 1000/30 ms for frame
 
 
-	const double delay_ms = (time2_in_frames - time1_in_frames) * 1000 / 30;
+	const double delay_ms = (time2_in_frames - time1_in_frames) * 1000 / fps;
 
 	//skip 5 frames
 	if (data1.timecode_counter > 20 || data2.timecode_counter > 20 && std::abs(delay_ms) > 10000)
@@ -101,6 +101,8 @@ inline void handleTimecode(const long double& sample, tc_data& data, const int& 
 	static const double frates[] = {30, 24, 25, 30000.0 / 1001};
 
 
+	//pulsesize is depending of srate and fps
+	data.pulsesize = srate / frates[slider] / 160;
 	// remove DC offset
 	data.otm1 = 0.999 * data.otm1 + sample - data.itm1;
 	data.itm1 = sample;
@@ -431,11 +433,19 @@ void NewProjectAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
 	{
 		handle_const_delay(write1[i], chnl1);
 
-		processTimeCode(write1[i], chnl1_in, input_ch1, i); //for input channel 1
-		processTimeCode(write2[i], chnl2_in, input_ch2, i); // for input channel 2
 
-		d_ms = calc_delay(chnl1_in, chnl2_in);
+		if (fps == 30) {
+			processTimeCode(write1[i], chnl1_in, input_ch1, i); //for input channel 1
+			processTimeCode(write2[i], chnl2_in, input_ch2, i); // for input channel 2
+		}
+		else if(fps == 25)
+		{
+			processTimeCode(write1[i], chnl1_in, input_ch1, i, 44100, 2); //for input channel 1
+			processTimeCode(write2[i], chnl2_in, input_ch2, i, 44100, 2); // for input channel 2
 
+
+		}
+		d_ms = calc_delay(chnl1_in, chnl2_in, fps);
 		delay_ms = std::to_string(std::abs(delay_frames));
 		o_delay_ms = std::to_string(std::abs(d_ms));
 
@@ -492,9 +502,15 @@ void NewProjectAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
 				
 			}
 			
-
-			processTimeCode(write1[i], chnl1, tc, i); //for output channel1 
-			processTimeCode(write2[i], chnl2, output_c2, i); //for output channel 2
+			if (fps == 30) {
+				processTimeCode(write1[i], chnl1, tc, i); //for output channel1 
+				processTimeCode(write2[i], chnl2, output_c2, i); //for output channel 2
+			}
+			else if(fps == 25)
+			{
+				processTimeCode(write1[i], chnl1, tc, i, 44100, 2); //for output channel1 
+				processTimeCode(write2[i], chnl2, output_c2, i, 44100, 2); //for output channel 2
+			}
 		}
 		else
 		{

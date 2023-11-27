@@ -51,7 +51,7 @@ public:
 	const long double minthresh = 0.0001;
 
 	const int bufSize = 80;
-	const float pulsesize = 9.1875; //sample rate 44,1khz
+	float pulsesize = 9.1875; //sample rate 44,1khz and 30 fps
 	//const long double pulsesize = 10; //sample rate 48khz
 
 
@@ -134,7 +134,10 @@ public:
 	//parametr decalred for midi modulation link
 	juce::AudioParameterFloat* myParameter;
 
-	double d_ms = 0;//input delay
+	double d_ms = 0;//input delayý
+
+	//fps
+	int fps = 30;
 
 public:
 	//==============================================================================

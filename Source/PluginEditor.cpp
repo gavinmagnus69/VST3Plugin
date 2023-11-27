@@ -64,6 +64,34 @@ NewProjectAudioProcessorEditor::NewProjectAudioProcessorEditor(NewProjectAudioPr
 
 
 		};
+	//fps label
+	fps_label.setText("30FPS", juce::dontSendNotification);
+	addAndMakeVisible(fps_label);
+
+
+	//fps box
+	fps_box.addItem("30FPS", 1);
+	fps_box.addItem("25FPS", 2);
+	fps_box.setSelectedId(1);
+
+	fps_box.onChange = [&]()
+		{
+			int id = fps_box.getSelectedId();
+
+			if(id == 1)
+			{
+				audioProcessor.fps = 30;
+				fps_label.setText("30FPS", juce::dontSendNotification);
+			}
+			else if(id == 2)
+			{
+				audioProcessor.fps = 25;
+				fps_label.setText("25FPS", juce::dontSendNotification);
+			}
+		};
+
+
+	addAndMakeVisible(fps_box);
 
 
 	setSize(400, 300);
@@ -157,6 +185,14 @@ void NewProjectAudioProcessorEditor::resized()
 	version.setSize(170, 75);
 	version.setTopLeftPosition(290, 230);
 	version.moved();
+
+	fps_box.setSize(60, 30);
+	fps_box.setTopLeftPosition(160, 250);
+	fps_box.moved();
+
+	fps_label.setSize(80, 50);
+	fps_label.setTopLeftPosition(110, 240);
+	fps_label.moved();
 
 }
 

@@ -60,6 +60,12 @@ private:
 	//version label
 	juce::Label version;
 
+	//fps buttons
+	juce::ComboBox fps_box;
+	juce::Label fps_label;
+
+
+
 	double delay_by_slider = 0;
 
 	JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(NewProjectAudioProcessorEditor)
