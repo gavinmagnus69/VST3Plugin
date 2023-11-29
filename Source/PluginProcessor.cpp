@@ -411,7 +411,8 @@ void NewProjectAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
 
 
 	//sending out (delay + slider value) as 2 7 bits values via midi link through channel 1 controller event 6
-	int value = static_cast<int>((std::abs(d_ms) + by_slider) * 4.125);
+	
+	int value = static_cast<int>(static_cast<float>(((std::abs(d_ms) + by_slider) / 10000) * 16383.0f ));
 	if(value < 0)
 	{
 		value = 0;
@@ -429,7 +430,7 @@ void NewProjectAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
 
 
 	//pitch
-	midiMessages.addEvent(juce::MidiMessage::pitchWheel(1, static_cast<int>(value * 4.125)), 0);
+	midiMessages.addEvent(juce::MidiMessage::pitchWheel(1, value), 0);
 
 	for (int i = 0; i < buffer.getNumSamples(); ++i)
 	{
@@ -470,7 +471,7 @@ void NewProjectAudioProcessor::processBlock(juce::AudioBuffer<float>& buffer, ju
 
 
 		//we sent info via midi modulation(we sent delay + slider value)
-		myParameter->setValueNotifyingHost((std::abs(d_ms) + std::floor(by_slider)) / 4000);
+		myParameter->setValueNotifyingHost(static_cast<float>((std::abs(d_ms) + std::floor(by_slider)) / 4000));
 
 
 		if (active_delay)
